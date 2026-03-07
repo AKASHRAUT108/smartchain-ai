@@ -1,0 +1,125 @@
+
+SUPPLY CHAIN MANAGEMENT GUIDE
+==============================
+
+DEMAND FORECASTING BEST PRACTICES
+-----------------------------------
+Demand forecasting accuracy depends on historical data quality.
+Use at least 2 years of historical data for seasonal products.
+Incorporate external signals like weather, holidays, and economic indicators.
+Safety stock formula: Safety Stock = Z-score × Standard Deviation × Lead Time.
+Reorder point = Average Daily Usage × Lead Time + Safety Stock.
+ABC analysis: A-items (top 20% revenue), B-items (middle), C-items (bottom 50%).
+
+SUPPLIER RISK MANAGEMENT
+-------------------------
+Always maintain at least 2-3 alternative suppliers per critical component.
+Supplier risk score = (delivery performance × 0.4) + (quality score × 0.4) + (financial stability × 0.2).
+High risk suppliers: delivery rate below 85% or quality defect rate above 2%.
+Conduct supplier audits every 6 months for critical suppliers.
+Geopolitical risk zones: Southeast Asia, Eastern Europe, Middle East require buffer stock of 30 extra days.
+
+INVENTORY OPTIMIZATION
+-----------------------
+Economic Order Quantity (EOQ) = sqrt(2 × Demand × Ordering Cost / Holding Cost).
+Just-In-Time (JIT) reduces inventory costs but increases supply chain vulnerability.
+Recommended safety stock levels: A-items = 7 days, B-items = 14 days, C-items = 30 days.
+Dead stock threshold: items with zero movement for 90+ days should be reviewed.
+Inventory turnover ratio below 4 indicates overstocking problems.
+
+LOGISTICS AND SHIPPING
+-----------------------
+Standard shipping modes: Standard (5-7 days), Express (2-3 days), Same-Day (24 hours).
+Late delivery rate above 10% requires immediate supplier review.
+Port congestion typically adds 3-7 days to ocean freight timelines.
+Air freight costs 4-6x more than ocean freight but reduces lead time by 70%.
+Last-mile delivery accounts for 53% of total shipping costs.
+
+DISRUPTION RESPONSE PROTOCOLS
+-------------------------------
+Level 1 disruption (minor): Switch to backup supplier within 48 hours.
+Level 2 disruption (moderate): Activate safety stock, notify customers of potential delays.
+Level 3 disruption (severe): Emergency procurement, airfreight critical items, executive escalation.
+Natural disaster protocol: Pre-position inventory in unaffected regions before storm season.
+Strike protocol: Increase inventory by 25% in affected regions 2 weeks before anticipated strike.
+
+KEY PERFORMANCE INDICATORS
+---------------------------
+Perfect Order Rate target: above 95%.
+Inventory Accuracy target: above 99%.
+Supplier On-Time Delivery target: above 92%.
+Order Cycle Time: time from order placement to delivery.
+Cash-to-Cash Cycle Time: days between paying suppliers and receiving customer payment.
+Freight Cost per Unit: total freight cost divided by units shipped.
+```
+
+Now create a second document `data/knowledge_base/risk_protocols.txt`:
+```
+SUPPLY CHAIN RISK PROTOCOLS
+=============================
+
+PORT STRIKE RESPONSE
+---------------------
+Immediate actions within 24 hours:
+1. Assess volume of goods stuck at affected port
+2. Identify alternative ports within 200 mile radius
+3. Contact freight forwarder for rerouting options
+4. Notify top 10 customers of potential 7-14 day delays
+5. Activate air freight for critical high-value items only
+
+Medium-term actions within 1 week:
+1. Reroute ocean freight through alternative ports
+2. Increase safety stock orders from inland suppliers
+3. Monitor strike negotiations daily
+4. Prepare customer communication templates
+
+NATURAL DISASTER RESPONSE
+--------------------------
+Earthquake or Typhoon protocol:
+1. Immediately assess supplier facilities in affected region
+2. Contact all tier-1 suppliers within 6 hours
+3. Identify tier-2 and tier-3 backup suppliers
+4. Calculate weeks of inventory coverage for all affected SKUs
+5. Place emergency orders for items below 2 weeks coverage
+
+Flood protocol:
+1. Check warehouse locations for flood risk
+2. Move inventory to higher ground facilities
+3. Prioritize waterproof packaging for vulnerable goods
+
+RAW MATERIAL SHORTAGE RESPONSE
+--------------------------------
+Semiconductor shortage:
+1. Audit all products requiring affected chips
+2. Prioritize allocation to highest-margin products
+3. Engage spot market procurement teams
+4. Consider product redesign to use alternative components
+5. Communicate lead time extensions to customers immediately
+
+Commodity price spike response:
+1. Review all long-term supplier contracts for price lock options
+2. Consider forward buying if price increase expected to last 6+ months
+3. Pass costs to customers with 30-day advance notice
+4. Explore material substitution options with engineering team
+
+GEOPOLITICAL RISK RESPONSE
+---------------------------
+New tariff implementation:
+1. Calculate landed cost impact within 48 hours
+2. Identify alternative sourcing countries
+3. Review free trade agreement eligibility
+4. Consider bonded warehouse or foreign trade zone options
+5. Model price increase scenarios for finance approval
+
+Trade war escalation:
+1. Accelerate diversification away from affected country
+2. Build 90-day inventory buffer for tariff-affected goods
+3. Explore nearshoring options to reduce geopolitical exposure
+
+KPI BENCHMARKS BY INDUSTRY
+----------------------------
+Retail: Perfect order rate 96%, inventory turns 8x per year
+Automotive: Supplier OTD 98%, safety stock 5 days
+Electronics: Lead time variability +/- 3 days acceptable
+Food & Beverage: Shelf life waste below 2%, cold chain compliance 99.9%
+Pharmaceutical: Regulatory compliance 100%, temperature excursion 0%
