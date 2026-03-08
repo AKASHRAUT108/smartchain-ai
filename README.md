@@ -60,7 +60,7 @@ Most still rely on Excel sheets with zero AI intelligence.
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/YOUR_USERNAME/smartchain-ai.git
+git clone https://github.com/AKASHRAUT108/smartchain-ai.git
 cd smartchain-ai
 ```
 
