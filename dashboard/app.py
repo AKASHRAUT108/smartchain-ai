@@ -58,12 +58,13 @@ with st.sidebar:
     st.divider()
     st.markdown("### 📌 Navigation")
     page = st.radio(
-        "Go to",
-        ["📈 Demand Forecast",
-         "⚠️ Risk Analyzer",
-         "🤖 AI Chatbot",
-         "📊 Dashboard Overview"],
-        label_visibility="collapsed"
+    "Go to",
+    ["📈 Demand Forecast",
+     "⚠️ Risk Analyzer",
+     "🤖 AI Chatbot",
+     "📊 Dashboard Overview",
+     "🧠 Agent Console"],        # ← ADD THIS
+    label_visibility="collapsed"
     )
     st.divider()
     st.markdown("**Models Active:**")
@@ -387,3 +388,112 @@ elif page == "📊 Dashboard Overview":
                 )
             except Exception as e:
                 st.error(str(e))
+
+# ══════════════════════════════════════════════════
+elif page == "🧠 Agent Console":
+    st.markdown('<p class="main-header">🧠 Agent Console</p>',
+                unsafe_allow_html=True)
+    st.markdown("Orchestrator Agent — routes your query to the right AI automatically.")
+    st.divider()
+
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        st.markdown("### 💬 Talk to the Agent")
+        session_id = st.text_input("Session ID", value="my_session")
+        query      = st.text_area(
+            "Ask the agent anything:",
+            placeholder="e.g. There is a port strike in LA!\nor: What will demand be next week?\nor: Give me a full status report",
+            height=120
+        )
+
+        if st.button("🚀 Run Agent"):
+            if query.strip():
+                with st.spinner("🤖 Agent thinking..."):
+                    try:
+                        resp = requests.post(
+                            f"{API_URL}/agent/run",
+                            json={"query": query, "session_id": session_id},
+                            timeout=60
+                        )
+                        data = resp.json()
+                        st.session_state["agent_result"] = data
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+            else:
+                st.warning("Please enter a query")
+
+        # Quick test buttons
+        st.markdown("### ⚡ Quick Tests")
+        quick = [
+            "What will demand be next week?",
+            "Port strike at LA causing delays!",
+            "How do I calculate safety stock?",
+            "Give me a full status report"
+        ]
+        for q in quick:
+            if st.button(q, key=f"quick_{q}"):
+                with st.spinner("🤖 Agent thinking..."):
+                    try:
+                        resp = requests.post(
+                            f"{API_URL}/agent/run",
+                            json={"query": q, "session_id": session_id},
+                            timeout=60
+                        )
+                        st.session_state["agent_result"] = resp.json()
+                    except Exception as e:
+                        st.error(str(e))
+
+    with col2:
+        if "agent_result" in st.session_state:
+            data = st.session_state["agent_result"]
+
+            # Tool badge
+            tool_colors = {
+                "DemandForecaster":     "🟦",
+                "RiskDetector":         "🟥",
+                "SupplyChainKnowledge": "🟩",
+                "StatusReport":         "🟨"
+            }
+            badge = tool_colors.get(data["tool_used"], "⬜")
+            st.markdown(f"### {badge} Tool Used: `{data['tool_used']}`")
+            st.text_area("Agent Response:", value=data["result"], height=300)
+
+            if data.get("memory_ctx"):
+                st.caption(f"📝 Memory: {data['memory_ctx']}")
+
+    # Risk Alerts Panel
+    st.divider()
+    st.markdown("### 🚨 Autonomous Risk Alerts")
+    try:
+        resp   = requests.get(f"{API_URL}/agent/alerts", timeout=10)
+        alerts = resp.json()
+        if alerts["total_alerts"] > 0:
+            for a in alerts["alerts"][:5]:
+                severity = a["severity"]
+                color    = "🔴" if severity >= 7 else "🟠" if severity >= 4 else "🟡"
+                st.markdown(
+                    f"{color} **[{a['risk_cat']}]** (severity: {severity}/10)  \n"
+                    f"_{a['headline'][:80]}_  \n"
+                    f"<small>{a['timestamp'][:19]}</small>",
+                    unsafe_allow_html=True
+                )
+        else:
+            st.info("No risk alerts yet. Run the monitor agent to start scanning.")
+    except:
+        st.warning("Start the API to see alerts")
+
+    # Memory Panel
+    st.divider()
+    st.markdown("### 📝 Agent Memory")
+    try:
+        resp    = requests.get(f"{API_URL}/agent/memory/{session_id}", timeout=10)
+        mem     = resp.json()
+        if mem["history"]:
+            mem_df = pd.DataFrame(mem["history"])
+            st.dataframe(mem_df[["timestamp","query","tool_used"]],
+                        use_container_width=True, hide_index=True)
+        else:
+            st.info("No memory yet for this session.")
+    except:
+        st.warning("Start the API to see memory")

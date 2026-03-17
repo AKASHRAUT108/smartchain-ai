@@ -1,6 +1,6 @@
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-
+from agents.orchestrator import run_agent, init_memory_db, get_recent_alerts, get_memory_history
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -56,6 +56,8 @@ class RiskRequest(BaseModel):
     headline: str
 
 # ─── ENDPOINTS ─────────────────────────────────────────────
+init_memory_db()
+print("   ✅ Agent memory initialized")
 
 @app.get("/health")
 def health():
@@ -154,6 +156,57 @@ def chat(request: ChatRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+class AgentRequest(BaseModel):
+    query:      str
+    session_id: str = "default"
 
+@app.post("/agent/run")
+def agent_run(request: AgentRequest):
+    """Master Orchestrator Agent — routes query to best tool automatically."""
+    try:
+        result = run_agent(request.query, request.session_id)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/agent/alerts")
+def agent_alerts():
+    """Get all autonomous risk alerts detected by monitor agent."""
+    try:
+        alerts = get_recent_alerts(limit=20)
+        return {
+            "total_alerts": len(alerts),
+            "alerts": [
+                {
+                    "timestamp": a[0],
+                    "headline":  a[1],
+                    "risk_cat":  a[2],
+                    "severity":  a[3]
+                }
+                for a in alerts
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/agent/memory/{session_id}")
+def agent_memory(session_id: str):
+    """Get agent memory for a session."""
+    try:
+        history = get_memory_history(session_id, limit=10)
+        return {
+            "session_id": session_id,
+            "history": [
+                {
+                    "timestamp": h[0],
+                    "query":     h[1],
+                    "tool_used": h[2],
+                    "result":    h[3]
+                }
+                for h in history
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)
