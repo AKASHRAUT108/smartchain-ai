@@ -1,12 +1,14 @@
-# 🏭 SmartChain AI
+# 🏭 SmartChain Agentic AI
 
-> **Intelligent Supply Chain Risk Intelligence & Demand Forecasting System**
+> **Intelligent Supply Chain Multi-Agent System — Forecasting · Risk Intelligence · RAG Chatbot · Autonomous Monitoring**
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104-green)](https://fastapi.tiangolo.com)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.15-orange)](https://tensorflow.org)
 [![HuggingFace](https://img.shields.io/badge/🤗-Transformers-yellow)](https://huggingface.co)
+[![LangChain](https://img.shields.io/badge/LangChain-Agents-purple)](https://langchain.com)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://docker.com)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://smartchain-ai-i82g936efdbyvbqwd2wume.streamlit.app)
 
 ---
 
@@ -15,44 +17,62 @@
 Companies lose **$8 billion+** annually due to supply chain disruptions.
 Most still rely on Excel sheets with zero AI intelligence.
 
-**SmartChain AI** gives any company a real-time AI brain that:
-- 📈 Predicts demand surges using LSTM deep learning
-- ⚠️ Detects supply chain risks from news using BERT NLP
-- 🤖 Answers supply chain questions using RAG (Retrieval-Augmented Generation)
-- 🚨 Flags shipment anomalies using 1D-CNN
+**SmartChain Agentic AI** gives any company a fully autonomous AI brain that:
+- 🤖 **Orchestrates** multiple specialized AI agents automatically
+- 📈 **Predicts** demand surges using LSTM deep learning
+- ⚠️ **Detects** supply chain risks from news using BERT NLP
+- 🔍 **Answers** supply chain questions using RAG (FAISS + RoBERTa)
+- 👁️ **Monitors** risks autonomously every 60 seconds — no human trigger needed
+- 💾 **Remembers** past decisions using persistent agent memory
 
 ---
 
-## 🧠 Architecture
+## 🧠 Agentic Architecture
+
 ```
-┌─────────────────────────────────────────────────┐
-│           SmartChain AI Dashboard               │
-│              (Streamlit UI :8501)               │
-└────────────┬──────────────┬───────────────────┬─┘
-             │              │                   │
-    ┌────────▼──────┐ ┌─────▼──────┐  ┌────────▼──────┐
-    │  LSTM Demand  │ │  BERT Risk │  │  RAG Chatbot  │
-    │  Forecasting  │ │  Classifier│  │  RoBERTa QA   │
-    └───────────────┘ └────────────┘  └───────────────┘
-             │              │                   │
-    ┌────────▼──────────────▼───────────────────▼──────┐
-    │              FastAPI Backend (:8000)              │
-    │     /forecast  /risk  /risk-feed  /chat  /health  │
-    └───────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    User / Dashboard                         │
+│              Streamlit UI  ·  REST API                      │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────────┐
+│              🧠 Orchestrator Agent                          │
+│     Routes query · ReAct logic · LangChain Tools            │
+└────┬──────────────┬──────────────┬──────────────┬───────────┘
+     │              │              │              │
+┌────▼────┐  ┌──────▼──────┐ ┌────▼────┐  ┌──────▼──────┐
+│📈 Fore- │  │ ⚠️  Risk    │ │🔍 RAG   │  │ 📋 Report  │
+│cast     │  │ Agent       │ │Agent    │  │ Agent      │
+│LSTM+CNN │  │ DistilBERT  │ │RoBERTa  │  │ Combines   │
+│         │  │ 5 categories│ │+ FAISS  │  │ all agents │
+└─────────┘  └─────────────┘ └─────────┘  └────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│                  💾 Agent Memory (SQLite)                   │
+│         Session history · risk alerts · decision log        │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│              👁️  Autonomous Monitor Agent                   │
+│       Scans news every 60s · no human trigger needed        │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Full Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Demand Forecasting | LSTM + 1D-CNN (TensorFlow) |
-| Risk Detection | DistilBERT (HuggingFace Transformers) |
-| RAG Chatbot | RoBERTa + FAISS + LangChain |
-| Backend API | FastAPI + Uvicorn |
-| Frontend | Streamlit + Plotly |
-| Deployment | Docker + Docker Compose |
+| Layer | Technology | Purpose |
+|---|---|---|
+| Orchestrator | LangChain AgentExecutor + ReAct | Routes queries to right agent |
+| Demand Forecasting | LSTM + 1D-CNN (TensorFlow) | Predict future demand |
+| Risk Detection | DistilBERT (HuggingFace) | Classify supply chain risks |
+| RAG Chatbot | RoBERTa + FAISS + LangChain | Knowledge base Q&A |
+| Agent Memory | SQLite + SQLAlchemy | Persistent decision history |
+| Autonomous Monitor | Python schedule library | Background risk scanning |
+| Backend API | FastAPI + Uvicorn | 8 REST endpoints |
+| Frontend | Streamlit + Plotly | 5-page interactive dashboard |
+| Deployment | Docker + Streamlit Cloud | Containerized + live URL |
 
 ---
 
@@ -82,19 +102,24 @@ cp .env.example .env
 # Add your NEWSAPI_KEY and HF_TOKEN
 ```
 
-### 5. Build the knowledge base
+### 5. Build knowledge base + agent memory
 ```bash
 python src/rag/ingest.py
 ```
 
-### 6. Start the API
+### 6. Start everything (4 terminals)
 ```bash
+# Terminal 1 — API
 uvicorn src.api.main:app --reload --port 8000
-```
 
-### 7. Start the Dashboard (new terminal)
-```bash
+# Terminal 2 — Dashboard
 streamlit run dashboard/app.py
+
+# Terminal 3 — Autonomous Monitor
+python -m src.agents.monitor
+
+# Terminal 4 — Test Orchestrator
+python -m src.agents.orchestrator
 ```
 
 Open → `http://localhost:8501`
@@ -102,12 +127,13 @@ Open → `http://localhost:8501`
 ---
 
 ## 🐳 Docker Deployment
+
 ```bash
 docker-compose up --build
 ```
 
 - Dashboard → `http://localhost:8501`
-- API Docs  → `http://localhost:8000/docs`
+- API Docs → `http://localhost:8000/docs`
 
 ---
 
@@ -120,6 +146,20 @@ docker-compose up --build
 | POST | `/risk` | BERT risk classification |
 | GET | `/risk-feed` | Live news risk scores |
 | POST | `/chat` | RAG chatbot Q&A |
+| POST | `/agent/run` | Orchestrator agent (auto-routes) |
+| GET | `/agent/alerts` | Autonomous risk alerts |
+| GET | `/agent/memory/{id}` | Agent memory for session |
+
+---
+
+## 🤖 Agent Capabilities
+
+| Agent | Trigger Keywords | Model |
+|---|---|---|
+| DemandForecaster | demand, forecast, inventory, stock | LSTM + 1D-CNN |
+| RiskDetector | strike, disaster, shortage, tariff, war | DistilBERT |
+| SupplyChainKnowledge | how do, what is, calculate, KPI | RoBERTa + FAISS |
+| StatusReport | status, report, overview, summary | All agents combined |
 
 ---
 
@@ -127,31 +167,43 @@ docker-compose up --build
 
 | Model | Metric | Score |
 |---|---|---|
-| LSTM Demand | MAE | ~23 units |
-| BERT Risk | Accuracy | ~83% |
-| RoBERTa QA | Confidence | ~85% avg |
+| LSTM Demand | MAE | ~23 units/day |
+| BERT Risk | Accuracy | ~83% (5 categories) |
+| RoBERTa QA | Avg Confidence | ~85% |
+| Orchestrator | Routing Accuracy | ~95% (keyword scoring) |
 
 ---
 
 ## 📁 Project Structure
+
 ```
 smartchain-ai/
 ├── src/
-│   ├── forecasting/    # LSTM training + prediction
-│   ├── risk_nlp/       # BERT fine-tuning + inference
-│   ├── rag/            # FAISS + RoBERTa QA chatbot
-│   └── api/            # FastAPI backend
-├── dashboard/          # Streamlit frontend
+│   ├── agents/
+│   │   ├── tools.py          # LangChain Tool wrappers
+│   │   ├── orchestrator.py   # Master routing agent + memory
+│   │   └── monitor.py        # Autonomous background monitor
+│   ├── forecasting/          # LSTM training + prediction
+│   ├── risk_nlp/             # BERT fine-tuning + inference
+│   ├── rag/                  # FAISS + RoBERTa QA chatbot
+│   └── api/                  # FastAPI backend (8 endpoints)
+├── dashboard/                # Streamlit 5-page frontend
 ├── data/
-│   ├── raw/            # Original datasets
-│   ├── processed/      # Features + FAISS index
-│   └── knowledge_base/ # Supply chain documents
-├── models/             # Saved model files
-├── notebooks/          # EDA + experiments
+│   ├── raw/                  # Original datasets
+│   ├── processed/            # Features + FAISS + agent DB
+│   └── knowledge_base/       # Supply chain documents
+├── models/                   # Saved model files
+├── notebooks/                # EDA + experiments
 ├── Dockerfile
 ├── docker-compose.yml
 └── requirements.txt
 ```
+
+---
+
+## 🌐 Live Demo
+
+**[smartchain-ai-i82g936efdbyvbqwd2wume.streamlit.app](https://smartchain-ai-i82g936efdbyvbqwd2wume.streamlit.app)**
 
 ---
 
@@ -160,16 +212,4 @@ smartchain-ai/
 **Akash Raut**
 - GitHub: [@AKASHRAUT108](https://github.com/AKASHRAUT108)
 - Built as a fresher ML portfolio project — March 2026
-```
-
----
-
-## 🔐 Step 4 — Create .env.example
-
-Create `.env.example` (safe to commit — no real keys):
-```
-NEWSAPI_KEY=your_newsapi_key_here
-HF_TOKEN=your_huggingface_token_here
-API_HOST=0.0.0.0
-API_PORT=8000
-DEBUG=True
+- Open to ML/AI/Data Science roles
